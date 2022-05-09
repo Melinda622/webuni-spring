@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: smart
+
+hr:
+  raise:
+    def:
+      percent: 5
+    smart:
+      highestPercent: 10
+      moderatePercent: 2
+      lowestPercent: 0
+      highestLimit: 10
+      middleLimit: 5
+      lowestLimit: 2.5
+
