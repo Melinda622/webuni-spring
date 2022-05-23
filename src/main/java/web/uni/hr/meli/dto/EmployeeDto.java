@@ -1,8 +1,8 @@
-package web.uni.hr.meli.model;
+package web.uni.hr.meli.dto;
 
 import java.time.LocalDateTime;
 
-public class Employee {
+public class EmployeeDto {
 
     private long id;
     private String name;
@@ -10,11 +10,11 @@ public class Employee {
     private int salary;
     private LocalDateTime startDate;
 
-    public Employee() {
+    public EmployeeDto() {
 
     }
 
-    public Employee(long id, String name, String position, int salary, LocalDateTime startDate) {
+    public EmployeeDto(long id, String name, String position, int salary, LocalDateTime startDate) {
         this.id = id;
         this.name = name;
         this.position = position;
@@ -62,4 +62,3 @@ public class Employee {
         this.startDate = startDate;
     }
 }
-

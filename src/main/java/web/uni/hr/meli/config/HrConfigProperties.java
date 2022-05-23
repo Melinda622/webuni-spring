@@ -3,6 +3,9 @@ package web.uni.hr.meli.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 @ConfigurationProperties(prefix = "hr")
 @Component
 public class HrConfigProperties {
@@ -58,6 +61,16 @@ public class HrConfigProperties {
         private double lowestLimit;
         private int middleLimit;
         private int highestLimit;
+
+        private Map<Double, Integer> limits=new TreeMap<>();
+
+        public Map<Double, Integer> getLimits() {
+            return limits;
+        }
+
+        public void setLimits(Map<Double, Integer> limits) {
+            this.limits = limits;
+        }
 
         public int getHighestPercent() {
             return highestPercent;
