@@ -17,16 +17,25 @@
                 <th>position</th>
                 <th>salary</th>
                 <th>start date</th>
+                <th>delete employees</th>
             </tr>
         </thead>
 
         <tbody>
             <tr th:each="employee: ${employees}">
                 <td th:text="${employee.id}">id</td>
-                <td th:text="${employee.name}">name</td>
+                <td>
+                    <a th:href="@{/employees/modify/{id} (id=${employee.id})}"
+                        th:text="${employee.name}">name</a>
+                    </td>
                 <td th:text="${employee.position}">position</td>
                 <td th:text="${employee.salary}">salary</td>
                 <td th:text="${employee.startDate}">start date</td>
+                <td>
+                    <button type="button">
+                        <a th:href="@{/employees/delete/{id} (id=${employee.id})}">delete</a>
+                    </button>
+                </td>
             </tr>
         </tbody>
     </table>

@@ -61,5 +61,16 @@ public class Employee {
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", position='" + position + '\'' +
+                ", salary=" + salary +
+                ", startDate=" + startDate +
+                '}';
+    }
 }
 

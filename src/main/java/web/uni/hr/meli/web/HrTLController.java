@@ -1,8 +1,7 @@
 package web.uni.hr.meli.web;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import web.uni.hr.meli.model.Employee;
 
 import java.time.LocalDateTime;
@@ -31,9 +30,47 @@ public class HrTLController {
         return "employees";
     }
 
+    @GetMapping("/employees/modify")
+    public String modifyEmployees(Map<String,Object> model){
+        model.put("employees",allEmployees);
+        model.put("newEmployee",new Employee());
+        return "employeeForm";
+    }
+
+    @GetMapping("/employees/modify/{id}")
+    public String modifyEmployees(@PathVariable("id") long id, Map<String,Object> model){
+        Employee employee=allEmployees.stream().filter(e->e.getId()==id).findFirst().get();
+        model.put("employees",allEmployees);
+        model.put("modifiedEmployee",employee);
+        return "employeeForm";
+    }
+
     @PostMapping("/employees")
     public String addEmployees(Employee employee){
         allEmployees.add(employee);
         return "redirect:employees";
+    }
+
+    @PostMapping("/employees/updateEmployee")
+    public String updateEmployees(Employee employee){
+       /* Employee emp=allEmployees.stream().filter(e->e.getId()==employee.getId()).findFirst().get();
+        emp.setName(employee.getName());
+        emp.setSalary(employee.getSalary());
+        emp.setStartDate(employee.getStartDate());
+        emp.setPosition(employee.getPosition());*/
+        for (int i = 0; i < allEmployees.size(); i++) {
+            if(allEmployees.get(i).getId()== employee.getId()){
+                allEmployees.set(i,employee);
+            }
+        }
+        return "redirect:/employees";
+    }
+
+    @GetMapping("/employees/delete/{id}")
+    public String deleteEmployees(@PathVariable("id") long id){
+        List<Employee> result=
+        allEmployees.stream().filter(employee->employee.getId()==id).toList();
+        allEmployees.removeAll(result);
+        return "redirect:/employees";
     }
 }

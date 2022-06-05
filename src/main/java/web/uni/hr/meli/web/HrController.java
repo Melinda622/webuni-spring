@@ -69,7 +69,7 @@ public class HrController {
     }
 
     @PutMapping("/{id}")
-    public  ResponseEntity<EmployeeDto> modifyAirport(@PathVariable long id, @RequestBody EmployeeDto employeeDto){
+    public  ResponseEntity<EmployeeDto> modifyEmployee(@PathVariable long id, @RequestBody EmployeeDto employeeDto){
         if(!employees.containsKey(id)){
             return ResponseEntity.notFound().build();
         }
