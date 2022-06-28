@@ -1,13 +1,21 @@
 package web.uni.hr.meli.dto;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.time.LocalDateTime;
 
 public class EmployeeDto {
 
     private long id;
+    @NotNull
     private String name;
+    @NotNull
     private String position;
+    @Min(1)
     private int salary;
+    @Past
     private LocalDateTime startDate;
 
     public EmployeeDto() {
@@ -61,5 +69,16 @@ public class EmployeeDto {
 
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
+    }
+
+    @Override
+    public String toString() {
+        return "EmployeeDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", position='" + position + '\'' +
+                ", salary=" + salary +
+                ", startDate=" + startDate +
+                '}';
     }
 }

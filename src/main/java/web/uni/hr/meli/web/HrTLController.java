@@ -53,11 +53,6 @@ public class HrTLController {
 
     @PostMapping("/employees/updateEmployee")
     public String updateEmployees(Employee employee){
-       /* Employee emp=allEmployees.stream().filter(e->e.getId()==employee.getId()).findFirst().get();
-        emp.setName(employee.getName());
-        emp.setSalary(employee.getSalary());
-        emp.setStartDate(employee.getStartDate());
-        emp.setPosition(employee.getPosition());*/
         for (int i = 0; i < allEmployees.size(); i++) {
             if(allEmployees.get(i).getId()== employee.getId()){
                 allEmployees.set(i,employee);

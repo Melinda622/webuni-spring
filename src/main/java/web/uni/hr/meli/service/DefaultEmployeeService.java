@@ -6,7 +6,7 @@ import web.uni.hr.meli.config.HrConfigProperties;
 import web.uni.hr.meli.model.Employee;
 
 @Service
-public class DefaultEmployeeService implements EmployeeService {
+public class DefaultEmployeeService extends HrService{
 
     @Autowired
     HrConfigProperties config;
