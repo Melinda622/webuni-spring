@@ -2,18 +2,27 @@ package web.uni.hr.meli.service;
 
 import web.uni.hr.meli.model.Employee;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface EmployeeService {
 
     int getPayRaisePercent(Employee employee);
 
-    public Employee save(Employee employee);
+    Employee save(Employee employee);
 
-    public List<Employee> findALl();
+    Employee update(Employee employee);
 
-    public Employee findById(long id);
+    List<Employee> findALl();
 
-    public void delete(long id);
+    Optional<Employee> findById(long id);
+
+    List<Employee> findByPosition(String position);
+
+    List<Employee> findByNameWithPrefix(String prefix);
+
+    List<Employee> findByStartDate(LocalDateTime startDate1, LocalDateTime startDate2);
+
+    void delete(long id);
 }

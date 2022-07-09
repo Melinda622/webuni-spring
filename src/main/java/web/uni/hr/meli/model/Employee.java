@@ -1,14 +1,23 @@
 package web.uni.hr.meli.model;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
+@Entity
 public class Employee {
 
+    @Id
+    @GeneratedValue
     private long id;
     private String name;
     private String position;
     private int salary;
     private LocalDateTime startDate;
+
+    @ManyToOne
+    @JoinColumn(name="company_id")
+    private Company company;
 
     public Employee() {
 
@@ -62,15 +71,25 @@ public class Employee {
         this.startDate = startDate;
     }
 
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
     @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", position='" + position + '\'' +
-                ", salary=" + salary +
-                ", startDate=" + startDate +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return id == employee.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
 

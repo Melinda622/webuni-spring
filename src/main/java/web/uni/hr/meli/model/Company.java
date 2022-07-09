@@ -1,15 +1,28 @@
 package web.uni.hr.meli.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Company {
 
+    @Id
+    @GeneratedValue
     private long id;
     private String companyNumber;
     private String name;
     private String address;
+
+    @OneToMany(mappedBy = "company")
     private List<Employee> staff = new ArrayList<>();
+
+    public Company() {
+
+    }
 
     public Company(long id, String companyNumber, String name, String address, List<Employee> staff) {
         this.id = id;
@@ -58,4 +71,14 @@ public class Company {
     public void setStaff(List<Employee> staff) {
         this.staff = staff;
     }
+
+    public void addEmployee(Employee employee) {
+
+        if (this.staff == null) {
+            this.staff = new ArrayList<>();
+        }
+        this.staff.add(employee);
+        employee.setCompany(this);
+    }
+
 }

@@ -2,47 +2,87 @@ package web.uni.hr.meli.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import web.uni.hr.meli.dto.CompanyDto;
-import web.uni.hr.meli.dto.EmployeeDto;
 import web.uni.hr.meli.model.Company;
 import web.uni.hr.meli.model.Employee;
+import web.uni.hr.meli.repository.CompanyRepository;
+import web.uni.hr.meli.repository.EmployeeRepository;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class CompanyService {
 
-    private Map<Long, Company> companies = new HashMap<>();
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Autowired
-    private EmployeeService employeeService;
-
-    {
-        companies.put(1L, new Company(1, "12345", "IT consulting kft", "Budapest",
-                new ArrayList<>(Arrays.asList(new Employee(1, "John Doe", "accountant", 100000,
-                        LocalDateTime.of(2021, 6, 3, 8, 0))))
-        ));
-    }
-
-    public Map<Long, Company> getCompanies() {
-        return companies;
-    }
+    private EmployeeRepository employeeRepository;
 
     public Company save(Company company) {
-        companies.put(company.getId(), company);
+        checkUniqueCompanyNumber(company.getCompanyNumber(), null);
+        companyRepository.save(company);
         return company;
     }
 
-    public List<Company> findALl() {
-        return new ArrayList<>(companies.values());
+    public Company update(Company company) {
+        checkUniqueCompanyNumber(company.getCompanyNumber(), company.getId());
+        if (companyRepository.existsById(company.getId())) {
+            return companyRepository.save(company);
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
-    public Company findById(long id) {
-        return companies.get(id);
+    private void checkUniqueCompanyNumber(String companyNumber, Long id) {
+
+        boolean forUpdate = id != null;
+
+        Long count = forUpdate ?
+                companyRepository.countByCompanyNumberAndIdNot(companyNumber, id)
+                : companyRepository.countByCompanyNumber(companyNumber);
+
+        if (count > 0)
+            throw new NonUniqueCompanyNumberException(companyNumber);
+    }
+
+    public List<Company> findALl() {
+        return companyRepository.findAll();
+    }
+
+    public Optional<Company> findById(long id) {
+        return companyRepository.findById(id);
     }
 
     public void delete(long id) {
-        companies.remove(id);
+        companyRepository.deleteById(id);
+    }
+
+    public Company addEmployee(long id, Employee employee) {
+        Company company = companyRepository.findById(id).get();
+        company.addEmployee(employee);
+        employeeRepository.save(employee);
+        return company;
+    }
+
+    public Company deleteEmployee(long id, long employeeId) {
+        Company company = companyRepository.findById(id).get();
+        Employee employee = employeeRepository.findById(employeeId).get();
+        employee.setCompany(null);
+        company.getStaff().remove(employee);
+        employeeRepository.save(employee);
+        return company;
+    }
+
+    public Company replaceEmployee(long id, List<Employee> employees) {
+        Company company = companyRepository.findById(id).get();
+        for (Employee employee : company.getStaff()) {
+            employee.setCompany(null);
+        }
+        company.getStaff().clear();
+        for (Employee employee : employees) {
+            company.addEmployee(employee);
+            employeeRepository.save(employee);
+        }
+        return company;
     }
 }

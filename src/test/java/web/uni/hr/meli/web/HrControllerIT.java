@@ -23,14 +23,14 @@ class HrControllerIT {
     @Test
     void testThatCreatedEmployeeIsListed() {
         List<EmployeeDto> employeesBefore = getAllEmployees();
-        EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
+        EmployeeDto newEmployee = new EmployeeDto(9, "Jill Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
         List<EmployeeDto> employeesAfter = getAllEmployees();
 
         assertThat(getAllEmployees().subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator().
                 containsExactlyElementsOf(employeesBefore);
 
-        assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().
+        assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().ignoringFields("id").
                 isEqualTo(newEmployee);
     }
 
@@ -52,9 +52,11 @@ class HrControllerIT {
 
     @Test
     void testPutMethod() {
-        EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
+        EmployeeDto newEmployee = new EmployeeDto(10, "Josephine Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
-        EmployeeDto updatedEmployee = new EmployeeDto(4, "Jonathan Doe", "IT developer", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
+        List<EmployeeDto> employeesBeforeModification = getAllEmployees();
+        EmployeeDto employeeFromDb = employeesBeforeModification.stream().filter(e -> e.getName().equals(newEmployee.getName())).toList().get(0);
+        EmployeeDto updatedEmployee = new EmployeeDto(employeeFromDb.getId(), "Josephine Doe", "IT developer", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         updateEmployee(updatedEmployee);
         assertThat(getEmployeeById(updatedEmployee).getPosition()).isEqualTo(updatedEmployee.getPosition());
     }
@@ -82,7 +84,7 @@ class HrControllerIT {
         EmployeeDto newEmployee = new EmployeeDto(4, null, "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployeeWithInvalidArgument(newEmployee);
         List<EmployeeDto> employeesAfter = getAllEmployees();
-        assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size());
+        assertThat(employeesAfter).hasSameSizeAs(employeesBefore);
     }
 
     @Test
@@ -91,7 +93,7 @@ class HrControllerIT {
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", null, 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployeeWithInvalidArgument(newEmployee);
         List<EmployeeDto> employeesAfter = getAllEmployees();
-        assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size());
+        assertThat(employeesAfter).hasSameSizeAs(employeesBefore);
     }
 
     @Test
@@ -100,7 +102,7 @@ class HrControllerIT {
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "It manager", 0, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployeeWithInvalidArgument(newEmployee);
         List<EmployeeDto> employeesAfter = getAllEmployees();
-        assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size());
+        assertThat(employeesAfter).hasSameSizeAs(employeesBefore);
     }
 
     @Test
@@ -109,14 +111,16 @@ class HrControllerIT {
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "It manager", 0, LocalDateTime.of(2022, 7, 1, 9, 0));
         createEmployeeWithInvalidArgument(newEmployee);
         List<EmployeeDto> employeesAfter = getAllEmployees();
-        assertThat(employeesAfter.size()).isEqualTo(employeesBefore.size());
+        assertThat(employeesAfter).hasSameSizeAs(employeesBefore);
     }
 
     @Test
     void testPutMethodWHenNameIsNull() {
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
-        EmployeeDto updatedEmployee = new EmployeeDto(4, null, "IT developer", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
+        List<EmployeeDto> employeesBeforeModification = getAllEmployees();
+        EmployeeDto employeeFromDb = employeesBeforeModification.stream().filter(e -> e.getName().equals(newEmployee.getName())).toList().get(0);
+        EmployeeDto updatedEmployee = new EmployeeDto(employeeFromDb.getId(), null, "IT developer", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         updateEmployeeWithInvalidArgument(updatedEmployee);
         assertThat(getEmployeeById(updatedEmployee).getName()).isNotEqualTo(updatedEmployee.getName());
     }
@@ -125,7 +129,9 @@ class HrControllerIT {
     void testPutMethodWHenPositionIsNull() {
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
-        EmployeeDto updatedEmployee = new EmployeeDto(4, "Jonathan Doe", null, 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
+        List<EmployeeDto> employeesBeforeModification = getAllEmployees();
+        EmployeeDto employeeFromDb = employeesBeforeModification.stream().filter(e -> e.getName().equals(newEmployee.getName())).toList().get(0);
+        EmployeeDto updatedEmployee = new EmployeeDto(employeeFromDb.getId(), "Jonathan Doe", null, 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         updateEmployeeWithInvalidArgument(updatedEmployee);
         assertThat(getEmployeeById(updatedEmployee).getPosition()).isNotEqualTo(updatedEmployee.getPosition());
     }
@@ -134,7 +140,9 @@ class HrControllerIT {
     void testPutMethodWHenSalaryIsLowerThan1() {
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
-        EmployeeDto updatedEmployee = new EmployeeDto(4, "Jonathan Doe", "IT developer", 0, LocalDateTime.of(2022, 1, 1, 9, 0));
+        List<EmployeeDto> employeesBeforeModification = getAllEmployees();
+        EmployeeDto employeeFromDb = employeesBeforeModification.stream().filter(e -> e.getName().equals(newEmployee.getName())).toList().get(0);
+        EmployeeDto updatedEmployee = new EmployeeDto(employeeFromDb.getId(), "Jonathan Doe", "IT developer", 0, LocalDateTime.of(2022, 1, 1, 9, 0));
         updateEmployeeWithInvalidArgument(updatedEmployee);
         assertThat(getEmployeeById(updatedEmployee).getSalary()).isNotEqualTo(updatedEmployee.getSalary());
     }
@@ -143,7 +151,9 @@ class HrControllerIT {
     void testPutMethodWHenStartDateIsNotInThePast() {
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "It manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
-        EmployeeDto updatedEmployee = new EmployeeDto(4, "Jonathan Doe", "IT developer", 300000, LocalDateTime.of(2022, 7, 1, 9, 0));
+        List<EmployeeDto> employeesBeforeModification = getAllEmployees();
+        EmployeeDto employeeFromDb = employeesBeforeModification.stream().filter(e -> e.getName().equals(newEmployee.getName())).toList().get(0);
+        EmployeeDto updatedEmployee = new EmployeeDto(employeeFromDb.getId(), "Jonathan Doe", "IT developer", 300000, LocalDateTime.of(2022, 12, 1, 9, 0));
         updateEmployeeWithInvalidArgument(updatedEmployee);
         assertThat(getEmployeeById(updatedEmployee).getStartDate()).isNotEqualTo(updatedEmployee.getStartDate());
     }

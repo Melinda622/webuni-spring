@@ -1,43 +1,57 @@
 package web.uni.hr.meli.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import web.uni.hr.meli.dto.EmployeeDto;
 import web.uni.hr.meli.model.Employee;
+import web.uni.hr.meli.repository.EmployeeRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
-public abstract class HrService implements EmployeeService{
+public abstract class HrService implements EmployeeService {
 
-    private Map<Long, Employee> employees = new HashMap<>();
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
-    {
-        employees.put(1L, new Employee(1, "John Doe", "accountant", 100000, LocalDateTime.of(2021, 6, 3, 8, 0)));
-        employees.put(2L, new Employee(2, "Jane Doe", "IT consultant", 200000, LocalDateTime.of(2022, 5, 16, 9, 0)));
+    public Employee save(Employee employee) {
+        return employeeRepository.save(employee);
     }
 
-    public Map<Long, Employee> getEmployees() {
-        return employees;
-    }
-
-    public Employee save(Employee employee){
-        employees.put(employee.getId(),employee);
-        return employee;
+    public Employee update(Employee employee) {
+        if (employeeRepository.existsById(employee.getId())) {
+            return employeeRepository.save(employee);
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     public List<Employee> findALl() {
-        return new ArrayList<>(employees.values());
+        return employeeRepository.findAll();
     }
 
-    public Employee findById(long id) {
-        return employees.get(id);
+    public Optional<Employee> findById(long id) {
+        return employeeRepository.findById(id);
+    }
+
+    @Override
+    public List<Employee> findByPosition(String position) {
+        return employeeRepository.findByPositionEquals(position);
+    }
+
+
+    @Override
+    public List<Employee> findByNameWithPrefix(String prefix) {
+        return employeeRepository.findByNameStartingWithIgnoreCase(prefix);
+    }
+
+    @Override
+    public List<Employee> findByStartDate(LocalDateTime startDate1, LocalDateTime startDate2) {
+        return employeeRepository.findByStartDateBetween(startDate1, startDate2);
     }
 
     public void delete(long id) {
-        employees.remove(id);
+        employeeRepository.deleteById(id);
     }
+
 }
