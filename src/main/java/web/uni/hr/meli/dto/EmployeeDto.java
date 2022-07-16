@@ -8,8 +8,10 @@ public class EmployeeDto {
     private long id;
     @NotEmpty
     private String name;
+
     @NotEmpty
-    private String position;
+    private String title;
+
     @Min(1)
     private int salary;
     @Past
@@ -17,14 +19,15 @@ public class EmployeeDto {
 
     private CompanyDto companyDto;
 
+
     public EmployeeDto() {
 
     }
 
-    public EmployeeDto(long id, String name, String position, int salary, LocalDateTime startDate) {
+     public EmployeeDto(long id, String name, String title, int salary, LocalDateTime startDate) {
         this.id = id;
         this.name = name;
-        this.position = position;
+        this.title = title;
         this.salary = salary;
         this.startDate = startDate;
     }
@@ -46,12 +49,12 @@ public class EmployeeDto {
         this.name = name;
     }
 
-    public String getPosition() {
-        return position;
+    public String getTitle() {
+        return title;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public int getSalary() {

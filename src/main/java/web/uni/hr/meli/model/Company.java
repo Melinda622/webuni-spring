@@ -1,9 +1,6 @@
 package web.uni.hr.meli.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +8,16 @@ import java.util.List;
 public class Company {
 
     @Id
-    @GeneratedValue
     private long id;
     private String companyNumber;
     private String name;
     private String address;
 
-    @OneToMany(mappedBy = "company")
+    @ManyToOne
+    private EntityType entityType;
+
+    //@OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company",fetch= FetchType.EAGER)
     private List<Employee> staff = new ArrayList<>();
 
     public Company() {
@@ -72,6 +72,14 @@ public class Company {
         this.staff = staff;
     }
 
+    public EntityType getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(EntityType entityType) {
+        this.entityType = entityType;
+    }
+
     public void addEmployee(Employee employee) {
 
         if (this.staff == null) {
@@ -81,4 +89,18 @@ public class Company {
         employee.setCompany(this);
     }
 
+    public void addEntityType(EntityType entityType) {
+        this.setEntityType(entityType);
+    }
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", companyNumber='" + companyNumber + '\'' +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                /*", staff=" + staff +*/
+                '}';
+    }
 }

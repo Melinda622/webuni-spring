@@ -8,10 +8,11 @@ import java.util.Objects;
 public class Employee {
 
     @Id
-    @GeneratedValue
     private long id;
     private String name;
-    private String position;
+    //private String position;
+    @ManyToOne
+    private Position position;
     private int salary;
     private LocalDateTime startDate;
 
@@ -23,13 +24,20 @@ public class Employee {
 
     }
 
-    public Employee(long id, String name, String position, int salary, LocalDateTime startDate) {
+    public Employee(long id, String name, int salary, LocalDateTime startDate) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+        this.startDate = startDate;
+    }
+
+    /*public Employee(long id, String name, String position, int salary, LocalDateTime startDate) {
         this.id = id;
         this.name = name;
         this.position = position;
         this.salary = salary;
         this.startDate = startDate;
-    }
+    }*/
 
     public long getId() {
         return id;
@@ -47,11 +55,19 @@ public class Employee {
         this.name = name;
     }
 
-    public String getPosition() {
+//    public String getPosition() {
+//        return position;
+//    }
+
+//    public void setPosition(String position) {
+//        this.position = position;
+//    }
+
+    public Position getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(Position position) {
         this.position = position;
     }
 
@@ -90,6 +106,18 @@ public class Employee {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", position='" + position + '\'' +
+                ", salary=" + salary +
+                ", startDate=" + startDate +
+                ", company=" + company +
+                '}';
     }
 }
 

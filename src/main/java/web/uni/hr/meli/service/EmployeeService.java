@@ -25,4 +25,8 @@ public interface EmployeeService {
     List<Employee> findByStartDate(LocalDateTime startDate1, LocalDateTime startDate2);
 
     void delete(long id);
+
+    void raiseMinSalary(long positionId,int limit);
+
+    void raiseMinSalary2(long companyId ,long positionId,int limit);
 }

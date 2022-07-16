@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import web.uni.hr.meli.model.Employee;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +13,9 @@ public class HrTLController {
 
     private List<Employee> allEmployees = new ArrayList<>();
 
-    {
+   /* {
         allEmployees.add(new Employee(1L,"John Doe","accountant",100000, LocalDateTime.of(2022,3,1,9,0)));
-    }
+    }*/
 
     @GetMapping("/")
     public String home(){

@@ -1,6 +1,8 @@
 package web.uni.hr.meli.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import web.uni.hr.meli.dto.EmployeeDto;
 import web.uni.hr.meli.mapper.HrMapper;
 import web.uni.hr.meli.model.Employee;
+import web.uni.hr.meli.repository.EmployeeRepository;
 import web.uni.hr.meli.service.EmployeeService;
 
 import javax.validation.Valid;
@@ -23,15 +26,18 @@ import java.util.NoSuchElementException;
 public class HrController {
 
     @Autowired
-    EmployeeService employeeService;
+    private EmployeeService employeeService;
 
     @Autowired
-    HrMapper hrMapper;
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private HrMapper hrMapper;
 
     @GetMapping
-    public List<EmployeeDto> getAllEmployees() {
-        List<Employee> result = employeeService.findALl();
-        return hrMapper.employeesToDtos(result);
+    public List<EmployeeDto> getAllEmployees(Pageable pageable) {
+        Page<Employee> result = employeeRepository.findAll(pageable);
+        return hrMapper.employeesToDtos(result.getContent());
     }
 
     @GetMapping("/{id}")
@@ -85,5 +91,11 @@ public class HrController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable long id) {
         employeeService.delete(id);
+    }
+
+    @GetMapping("/salary/{salary}")
+    public List<EmployeeDto> getBySalariesGreaterThan(@PathVariable int salary) {
+        List<Employee> result = employeeRepository.findBySalaryGreaterThan(salary);
+        return hrMapper.employeesToDtos(result);
     }
 }

@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import web.uni.hr.meli.model.Company;
 import web.uni.hr.meli.model.Employee;
+import web.uni.hr.meli.model.EntityType;
 import web.uni.hr.meli.repository.CompanyRepository;
 import web.uni.hr.meli.repository.EmployeeRepository;
+import web.uni.hr.meli.repository.EntityTypeRepository;
 
 import java.util.*;
 
@@ -17,6 +19,9 @@ public class CompanyService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EntityTypeRepository entityTypeRepository;
 
     public Company save(Company company) {
         checkUniqueCompanyNumber(company.getCompanyNumber(), null);
@@ -64,6 +69,14 @@ public class CompanyService {
         return company;
     }
 
+    public Company addEmployee2(long id, long employeeId) {
+        Company company = companyRepository.findById(id).get();
+        Employee employee = employeeRepository.findById(employeeId).get();
+        company.addEmployee(employee);
+        employeeRepository.save(employee);
+        return company;
+    }
+
     public Company deleteEmployee(long id, long employeeId) {
         Company company = companyRepository.findById(id).get();
         Employee employee = employeeRepository.findById(employeeId).get();
@@ -83,6 +96,13 @@ public class CompanyService {
             company.addEmployee(employee);
             employeeRepository.save(employee);
         }
+        return company;
+    }
+
+    public Company addEntity(long id, EntityType entityType) {
+        entityTypeRepository.save(entityType);
+        Company company = companyRepository.findById(id).get();
+        company.addEntityType(entityType);
         return company;
     }
 }

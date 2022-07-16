@@ -9,8 +9,11 @@ import web.uni.hr.meli.dto.CompanyDto;
 import web.uni.hr.meli.dto.EmployeeDto;
 import web.uni.hr.meli.mapper.CompanyMapper;
 import web.uni.hr.meli.mapper.HrMapper;
+import web.uni.hr.meli.model.AverageSalaryByPosition;
 import web.uni.hr.meli.model.Company;
 import web.uni.hr.meli.model.Employee;
+import web.uni.hr.meli.model.EntityType;
+import web.uni.hr.meli.repository.EmployeeRepository;
 import web.uni.hr.meli.service.CompanyService;
 import web.uni.hr.meli.service.EmployeeService;
 
@@ -22,6 +25,9 @@ public class CompanyController {
 
     @Autowired
     CompanyService companyService;
+
+    @Autowired
+    EmployeeRepository employeeRepository;
 
     @Autowired
     CompanyMapper companyMapper;
@@ -114,9 +120,23 @@ public class CompanyController {
         return companyMapper.companyToDto(company);
     }
 
-   /*Employeeservice
-    @GetMapping("/employees/raise/{id}")
-    public int getEmployeesByCompany(@PathVariable long id, @RequestBody Employee employee) {
+    @GetMapping("/averagesalary/{id}")
+    public List<AverageSalaryByPosition> getAverageSalaryByPosition(@PathVariable long id) {
+       return employeeRepository.findByCompanyWithAverageSalary(id);
+    }
+
+
+    @PostMapping("/entityTypes/{id}")
+    public CompanyDto addEntityType(@PathVariable long id, @RequestBody EntityType entityType) {
+        Company company = companyService.addEntity(id,entityType);
+        return companyMapper.companyToDto(company);
+    }
+
+
+   //Employeeservice
+    @GetMapping("/employees/raise/{companyId}/{employeeId}")
+    public int getRaiseByEmployeesByCompany(@PathVariable long companyId, @PathVariable long employeeId) {
+        Employee employee=employeeService.findById(employeeId).get();
         return employeeService.getPayRaisePercent(employee);
-    }*/
+    }
 }
