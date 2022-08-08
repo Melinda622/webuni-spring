@@ -13,6 +13,7 @@ import web.uni.hr.meli.model.AverageSalaryByPosition;
 import web.uni.hr.meli.model.Company;
 import web.uni.hr.meli.model.Employee;
 import web.uni.hr.meli.model.EntityType;
+import web.uni.hr.meli.repository.CompanyRepository;
 import web.uni.hr.meli.repository.EmployeeRepository;
 import web.uni.hr.meli.service.CompanyService;
 import web.uni.hr.meli.service.EmployeeService;
@@ -38,11 +39,15 @@ public class CompanyController {
     @Autowired
     EmployeeService employeeService;
 
+    @Autowired
+    CompanyRepository companyRepository;
+
     @GetMapping
     public List<CompanyDto> getAllCompanies(@RequestParam(required = false) Boolean full) {
         List<Company> companies = companyService.findALl();
 
-        if (isFull(full)) {
+        if (isFull(full)){
+            companies=companyRepository.findAllWithEmployee();
             return companyMapper.companiesToDtos(companies);
         } else {
             return companyMapper.companiesToDtosWithNoEmployees(companies);
@@ -58,6 +63,7 @@ public class CompanyController {
     public CompanyDto getById(@PathVariable long id, @RequestParam(required = false) Boolean full) {
         Company company = companyService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (isFull(full)) {
+            company=companyRepository.findByIdWithEmployee(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             return companyMapper.companyToDto(company);
         } else {
             return companyMapper.companyToDtoWithNoEmployees(company);
@@ -93,9 +99,11 @@ public class CompanyController {
 
     @GetMapping("/employees/{id}")
     public ResponseEntity<List<EmployeeDto>> getEmployeesInCompany(@PathVariable long id) {
-        Company company = companyService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+        //Company company = companyService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Company company = companyRepository.findByIdWithEmployee(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        System.out.println(company);
         List<Employee> employees = company.getStaff();
+        System.out.println(employees);
         return ResponseEntity.ok(hrMapper.employeesToDtos(employees));
     }
 

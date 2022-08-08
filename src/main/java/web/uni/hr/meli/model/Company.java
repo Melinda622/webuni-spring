@@ -1,9 +1,12 @@
 package web.uni.hr.meli.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedEntityGraph(name = "Company.full", attributeNodes = {@NamedAttributeNode("staff"), @NamedAttributeNode("entityType")})
 @Entity
 public class Company {
 
@@ -14,10 +17,11 @@ public class Company {
     private String address;
 
     @ManyToOne
+    @JsonIgnore
     private EntityType entityType;
 
-    //@OneToMany(mappedBy = "company")
-    @OneToMany(mappedBy = "company",fetch= FetchType.EAGER)
+    @OneToMany(mappedBy = "company")
+    @JsonIgnore
     private List<Employee> staff = new ArrayList<>();
 
     public Company() {
@@ -91,16 +95,5 @@ public class Company {
 
     public void addEntityType(EntityType entityType) {
         this.setEntityType(entityType);
-    }
-
-    @Override
-    public String toString() {
-        return "Company{" +
-                "id=" + id +
-                ", companyNumber='" + companyNumber + '\'' +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                /*", staff=" + staff +*/
-                '}';
     }
 }

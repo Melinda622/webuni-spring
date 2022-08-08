@@ -2,9 +2,12 @@ package web.uni.hr.meli.web;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import web.uni.hr.meli.dto.EmployeeDto;
+import web.uni.hr.meli.service.EmployeeService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -12,7 +15,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@AutoConfigureTestDatabase
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient(timeout="999999")
 class HrControllerIT {
 
     private static final String BASE_URI = "/api/employees";
@@ -20,9 +25,13 @@ class HrControllerIT {
     @Autowired
     WebTestClient webTestClient;
 
-   /* @Test
+    @Autowired
+    EmployeeService employeeService;
+
+    @Test
     void testThatCreatedEmployeeIsListed() {
         List<EmployeeDto> employeesBefore = getAllEmployees();
+        //List<Employee> employeesBefore = employeeService.findALl();
         EmployeeDto newEmployee = new EmployeeDto(9, "Jill Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
         List<EmployeeDto> employeesAfter = getAllEmployees();
@@ -30,9 +39,9 @@ class HrControllerIT {
         assertThat(getAllEmployees().subList(0, employeesBefore.size())).usingRecursiveFieldByFieldElementComparator().
                 containsExactlyElementsOf(employeesBefore);
 
-        assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().ignoringFields("id").
+        assertThat(employeesAfter.get(employeesAfter.size() - 1)).usingRecursiveComparison().ignoringFields("id","title").
                 isEqualTo(newEmployee);
-    }*/
+    }
 
     private void createEmployee(EmployeeDto newEmployee) {
         webTestClient.post().uri(BASE_URI).bodyValue(newEmployee).exchange().expectStatus().isOk();
@@ -50,7 +59,7 @@ class HrControllerIT {
         return responseList;
     }
 
-    /*@Test
+    @Test
     void testPutMethod() {
         EmployeeDto newEmployee = new EmployeeDto(10, "Josephine Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
@@ -58,8 +67,8 @@ class HrControllerIT {
         EmployeeDto employeeFromDb = employeesBeforeModification.stream().filter(e -> e.getName().equals(newEmployee.getName())).toList().get(0);
         EmployeeDto updatedEmployee = new EmployeeDto(employeeFromDb.getId(), "Josephine Doe", "IT developer", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         updateEmployee(updatedEmployee);
-        assertThat(getEmployeeById(updatedEmployee).getPosition()).isEqualTo(updatedEmployee.getPosition());
-    }*/
+        assertThat(getEmployeeById(updatedEmployee).getTitle()).isEqualTo(updatedEmployee.getTitle());
+    }
 
     private void updateEmployee(EmployeeDto updatedEmployee) {
         long id = updatedEmployee.getId();
@@ -105,14 +114,14 @@ class HrControllerIT {
         assertThat(employeesAfter).hasSameSizeAs(employeesBefore);
     }
 
-   /* @Test
+    @Test
     void testStartDateIsNotInThePast() {
         List<EmployeeDto> employeesBefore = getAllEmployees();
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "It manager", 0, LocalDateTime.of(2022, 7, 1, 9, 0));
         createEmployeeWithInvalidArgument(newEmployee);
         List<EmployeeDto> employeesAfter = getAllEmployees();
         assertThat(employeesAfter).hasSameSizeAs(employeesBefore);
-    }*/
+    }
 
     @Test
     void testPutMethodWHenNameIsNull() {
@@ -125,7 +134,7 @@ class HrControllerIT {
         assertThat(getEmployeeById(updatedEmployee).getName()).isNotEqualTo(updatedEmployee.getName());
     }
 
-   /* @Test
+    @Test
     void testPutMethodWHenPositionIsNull() {
         EmployeeDto newEmployee = new EmployeeDto(4, "Jonathan Doe", "IT manager", 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         createEmployee(newEmployee);
@@ -133,8 +142,8 @@ class HrControllerIT {
         EmployeeDto employeeFromDb = employeesBeforeModification.stream().filter(e -> e.getName().equals(newEmployee.getName())).toList().get(0);
         EmployeeDto updatedEmployee = new EmployeeDto(employeeFromDb.getId(), "Jonathan Doe", null, 300000, LocalDateTime.of(2022, 1, 1, 9, 0));
         updateEmployeeWithInvalidArgument(updatedEmployee);
-        assertThat(getEmployeeById(updatedEmployee).getPosition()).isNotEqualTo(updatedEmployee.getPosition());
-    }*/
+        assertThat(getEmployeeById(updatedEmployee).getTitle()).isNotEqualTo(updatedEmployee.getTitle());
+    }
 
     @Test
     void testPutMethodWHenSalaryIsLowerThan1() {

@@ -2,6 +2,7 @@ package web.uni.hr.meli.dto;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class EmployeeDto {
 
@@ -28,6 +29,13 @@ public class EmployeeDto {
         this.id = id;
         this.name = name;
         this.title = title;
+        this.salary = salary;
+        this.startDate = startDate;
+    }
+
+    public EmployeeDto(long id, String name, int salary, LocalDateTime startDate) {
+        this.id = id;
+        this.name = name;
         this.salary = salary;
         this.startDate = startDate;
     }
@@ -79,5 +87,18 @@ public class EmployeeDto {
 
     public void setCompanyDto(CompanyDto companyDto) {
         this.companyDto = companyDto;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EmployeeDto that = (EmployeeDto) o;
+        return id == that.id && salary == that.salary && name.equals(that.name) && title.equals(that.title) && startDate.equals(that.startDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, title, salary, startDate);
     }
 }

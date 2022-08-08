@@ -29,4 +29,6 @@ public interface EmployeeService {
     void raiseMinSalary(long positionId,int limit);
 
     void raiseMinSalary2(long companyId ,long positionId,int limit);
+
+    List<Employee> findEmployeesByExample(Employee example);
 }

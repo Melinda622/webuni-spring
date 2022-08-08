@@ -1,15 +1,13 @@
 package web.uni.hr.meli.model;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 public class Position {
 
     @Id
+    @GeneratedValue
     private long id;
     private String name;
     private MinQualification minQualification;
@@ -20,6 +18,12 @@ public class Position {
 
     public Position() {
 
+    }
+
+    public Position(String name, MinQualification minQualification) {
+        this.id = id;
+        this.name = name;
+        this.minQualification = minQualification;
     }
 
     public Position(long id, String name, MinQualification minQualification) {
@@ -65,5 +69,15 @@ public class Position {
 
     public void setMinSalary(int minSalary) {
         this.minSalary = minSalary;
+    }
+
+    @Override
+    public String toString() {
+        return "Position{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", minQualification=" + minQualification +
+                ", minSalary=" + minSalary +
+                '}';
     }
 }

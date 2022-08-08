@@ -46,10 +46,5 @@ public class HrApplication implements CommandLineRunner {
         System.out.println(salaryService.getFinalSalary(new Employee(2L, "Jane Doe", 100000, LocalDateTime.of(2007, 3, 1, 9, 0))));
         initDbService.clearDB();
         initDbService.insertTestData();
-
-        System.out.println(companyRepository.findDistinctByStaffSalaryGreaterThan(200000));
-        System.out.println(companyRepository.findByStaffCountHigherThan(1));
-        //employeeService.raiseMinSalary(4,100001);
-        employeeService.raiseMinSalary2(2,4,100000);
     }
 }

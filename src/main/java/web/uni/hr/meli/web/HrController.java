@@ -11,8 +11,11 @@ import org.springframework.web.server.ResponseStatusException;
 import web.uni.hr.meli.dto.EmployeeDto;
 import web.uni.hr.meli.mapper.HrMapper;
 import web.uni.hr.meli.model.Employee;
+import web.uni.hr.meli.model.Position;
 import web.uni.hr.meli.repository.EmployeeRepository;
+import web.uni.hr.meli.repository.PositionRepository;
 import web.uni.hr.meli.service.EmployeeService;
+import web.uni.hr.meli.service.HrService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -30,6 +33,9 @@ public class HrController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private PositionRepository positionRepository;
 
     @Autowired
     private HrMapper hrMapper;
@@ -70,7 +76,9 @@ public class HrController {
 
     @PostMapping
     public EmployeeDto createEmployee(@RequestBody @Valid EmployeeDto employeeDto) {
+        // Position position=positionRepository.findByName(employeeDto.getTitle()).get();
         Employee employee = hrMapper.dtoToEmployee(employeeDto);
+        //employee.setPosition(position);
         employeeService.save(employee);
         return hrMapper.employeeToDto(employee);
     }
@@ -96,6 +104,15 @@ public class HrController {
     @GetMapping("/salary/{salary}")
     public List<EmployeeDto> getBySalariesGreaterThan(@PathVariable int salary) {
         List<Employee> result = employeeRepository.findBySalaryGreaterThan(salary);
+        return hrMapper.employeesToDtos(result);
+    }
+
+    @PostMapping("/search")
+    public List<EmployeeDto> searchEmployees(@RequestBody EmployeeDto employeeDto) {
+        Employee example = hrMapper.dtoToEmployee(employeeDto);
+        System.out.println("companyDto: " + employeeDto.getCompanyDto());
+        List<Employee> result = employeeService.findEmployeesByExample(example);
+        System.out.println(result);
         return hrMapper.employeesToDtos(result);
     }
 }

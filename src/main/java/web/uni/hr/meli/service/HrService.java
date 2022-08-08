@@ -1,9 +1,11 @@
 package web.uni.hr.meli.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import web.uni.hr.meli.model.Company;
 import web.uni.hr.meli.model.Employee;
 import web.uni.hr.meli.model.Position;
 import web.uni.hr.meli.model.PositionDetailsByCompany;
@@ -27,12 +29,32 @@ public abstract class HrService implements EmployeeService {
     PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
 
     public Employee save(Employee employee) {
+        return saveWithPosition(employee);
+    }
+
+    private Employee saveWithPosition(Employee employee) {
+        Position position = employee.getPosition();
+        if (position != null) {
+            String positionName = position.getName();
+            if (!positionName.isBlank()) {
+                Position positionInDb = null;
+                Optional<Position> foundPosition = positionRepository.findByName(positionName);
+                if (foundPosition.isPresent()) {
+                    positionInDb = foundPosition.get();
+                } else {
+                    positionInDb = positionRepository.save(position);
+                }
+                employee.setPosition(positionInDb);
+            } else {
+                employee.setPosition(null);
+            }
+        }
         return employeeRepository.save(employee);
     }
 
     public Employee update(Employee employee) {
         if (employeeRepository.existsById(employee.getId())) {
-            return employeeRepository.save(employee);
+            return saveWithPosition(employee);
         } else {
             throw new NoSuchElementException();
         }
@@ -71,13 +93,13 @@ public abstract class HrService implements EmployeeService {
 
     //Solution part A
     @Override
-    public void raiseMinSalary(long positionId,int limit) {
-        List<Employee> targetEmployees = employeeRepository.findByPositionMinSalaryLessThan(positionId,limit);
-        Position position=positionRepository.findById(positionId).get();
+    public void raiseMinSalary(long positionId, int limit) {
+        List<Employee> targetEmployees = employeeRepository.findByPositionMinSalaryLessThan(positionId, limit);
+        Position position = positionRepository.findById(positionId).get();
         position.setMinSalary(limit);
         for (Employee e : targetEmployees) {
             e.getPosition().setMinSalary(limit);
-            if(e.getSalary()<limit){
+            if (e.getSalary() < limit) {
                 e.setSalary(limit);
             }
             employeeRepository.save(e);
@@ -88,12 +110,53 @@ public abstract class HrService implements EmployeeService {
     //Solution part C
     @Override
     public void raiseMinSalary2(long companyId, long positionId, int limit) {
-        PositionDetailsByCompany pd=positionDetailsByCompanyRepository.getByCompanyAndPositionWithMinSalaryLessThan(2,4,100000);
+        PositionDetailsByCompany pd = positionDetailsByCompanyRepository.getByCompanyAndPositionWithMinSalaryLessThan(2, 4, 100000);
         pd.setMinSalary(limit);
         positionDetailsByCompanyRepository.save(pd);
-        List<Employee> targetEmployees=pd.getCompany().getStaff().
-                stream().filter(e->e.getSalary()<limit).toList();
-        targetEmployees.stream().forEach(e->e.setSalary(limit));
-        targetEmployees.stream().forEach(e->employeeRepository.save(e));
+        List<Employee> targetEmployees = pd.getCompany().getStaff().
+                stream().filter(e -> e.getSalary() < limit).toList();
+        targetEmployees.stream().forEach(e -> e.setSalary(limit));
+        targetEmployees.stream().forEach(e -> employeeRepository.save(e));
+    }
+
+    //search
+    @Override
+    public List<Employee> findEmployeesByExample(Employee example) {
+        long id = example.getId();
+        String name = example.getName();
+        String title = example.getPosition().getName();
+        int salary = example.getSalary();
+        LocalDateTime startDate = example.getStartDate();
+        Company company = example.getCompany();
+        String companyName = company == null ? null : company.getName();
+
+        Specification<Employee> spec = Specification.where(null);
+
+        if (id > 0) {
+            spec = spec.and(EmployeeSpecifications.hasId(id));
+        }
+
+        if (StringUtils.hasText(name)) {
+            spec = spec.and(EmployeeSpecifications.hasName(name));
+        }
+
+
+        if (StringUtils.hasText(title)) {
+            spec = spec.and(EmployeeSpecifications.hasPosition(title));
+        }
+
+        if (salary > 0) {
+            spec = spec.and(EmployeeSpecifications.hasSalary(salary));
+        }
+
+        if (startDate != null) {
+            spec = spec.and(EmployeeSpecifications.hasStartDate(startDate));
+        }
+
+        if (StringUtils.hasText(companyName)) {
+            spec = spec.and(EmployeeSpecifications.hasCompany(companyName));
+        }
+
+        return employeeRepository.findAll(spec, Sort.by("id"));
     }
 }

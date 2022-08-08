@@ -1,5 +1,7 @@
 package web.uni.hr.meli.dto;
 
+import web.uni.hr.meli.model.EntityType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ public class CompanyDto {
     private String companyNumber;
     private String name;
     private String address;
+    private EntityType entityType;
     private List<EmployeeDto> staff = new ArrayList<>();
 
     public CompanyDto() {
@@ -21,6 +24,16 @@ public class CompanyDto {
         this.address = address;
         this.staff = staff;
     }
+
+    public CompanyDto(long id, String companyNumber, String name, String address, EntityType entityType, List<EmployeeDto> staff) {
+        this.id = id;
+        this.companyNumber = companyNumber;
+        this.name = name;
+        this.address = address;
+        this.entityType = entityType;
+        this.staff = staff;
+    }
+
 
     public void addNewEmployee(EmployeeDto employeeDto) {
         staff.add(employeeDto);
