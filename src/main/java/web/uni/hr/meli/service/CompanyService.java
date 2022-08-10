@@ -42,7 +42,6 @@ public class CompanyService {
     public Company update(Company company) {
         checkUniqueCompanyNumber(company.getCompanyNumber(), company.getId());
         if (companyRepository.existsById(company.getId())) {
-            company = companyRepository.findByIdWithEmployee(company.getId()).get();
             return companyRepository.save(company);
         } else {
             throw new NoSuchElementException();

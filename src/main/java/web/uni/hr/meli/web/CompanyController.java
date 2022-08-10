@@ -82,10 +82,11 @@ public class CompanyController {
     public ResponseEntity<CompanyDto> modifyCompany(@PathVariable long id, @RequestBody CompanyDto companyDto) {
         Company company = companyMapper.dtoToCompany(companyDto);
         company.setId(id);
-        CompanyDto result = null;
+        company=companyService.update(company);
+        company=companyRepository.findByIdWithEmployee(company.getId()).get();
 
         try {
-            result = companyMapper.companyToDto(companyService.update(company));
+           CompanyDto result = companyMapper.companyToDto(company);
             return ResponseEntity.ok(result);
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

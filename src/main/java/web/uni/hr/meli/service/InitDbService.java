@@ -29,8 +29,8 @@ public class InitDbService {
         employeeRepository.deleteAll();
         positionDetailsByCompanyRepository.deleteAll();
         companyRepository.deleteAll();
-        positionRepository.deleteAll();
         entityTypeRepository.deleteAll();
+        positionRepository.deleteAll();
     }
 
     public void insertTestData() {
